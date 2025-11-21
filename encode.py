@@ -33,14 +33,27 @@ def decoupe_octet(matrice):
         i += 1
     return res
 
-def encode(mot, matrice_gen):
+def encode(mot, matrice_gen, k, n):
     """
-    encode un mot par la matrice
+    encode un mot de taille k par la matrice de dimsension n x k
     """
-    pass
+    code = 0
+    i = 0
+    while i < n:
+        j = 0
+        b = 0 # 0 ou 1
+        while j < k:
+            b = b ^ (((mot >> ( k - j + 1)) & 1) & ((matice_gen[j] >> (n - i + 1)) & 1)) 
+            j += 1
+        code += (b << (n - i + 1))
+    return code
+
+matrice_gen_hamming = [70, 37, 19, 15]
+matrice_parite_hamming = [85, 51, 15]
 
 
 if __name__ == "__main__":
     matrice_pixel = read_pgm(sys.argv[1])
     mat = decoupe_octet(matrice_pixel)
-    print(mat)
+    mot = mat[0][0]
+    print(mot)
