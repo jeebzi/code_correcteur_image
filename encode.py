@@ -10,7 +10,7 @@ def read_pgm(chemin):
     f.seek(3)
     for ligne in f:
         liste = list(map(int, ligne.split()))
-        matrice += [liste]
+        matrice += liste
     f.close()
     return matrice
 
@@ -22,14 +22,9 @@ def decoupe_octet(matrice):
     res = [] #matrice résultat
     i = 0
     while i < len(matrice):
-        ligne = []
-        j = 0
-        while j < len(matrice[i]):
-            poid_faible = matrice[i][j] & 15
-            poid_fort = (matrice[i][j] >> 4) & 15
-            ligne += [poid_fort, poid_faible]
-            j += 1
-        res += [ligne]
+        poid_faible = matrice[i] & 15
+        poid_fort = (matrice[i] >> 4) & 15
+        res += [poid_fort, poid_faible]
         i += 1
     return res
 
@@ -55,5 +50,4 @@ matrice_parite_hamming = [85, 51, 15]
 if __name__ == "__main__":
     matrice_pixel = read_pgm(sys.argv[1])
     mat = decoupe_octet(matrice_pixel)
-    mot = mat[0][0]
-    print(mot)
+    print(mat)
