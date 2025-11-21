@@ -7,7 +7,8 @@ def read_pgm(chemin):
     """
     matrice = []
     f = open(chemin, "r")
-    f.seek(3)
+    for _ in range(3):
+        f.readline()
     for ligne in f:
         liste = list(map(int, ligne.split()))
         matrice += liste
@@ -28,26 +29,60 @@ def decoupe_octet(matrice):
         i += 1
     return res
 
-def encode(mot, matrice_gen, k, n):
+def encode_mot(mot, matrice_gen, k):
     """
-    encode un mot de taille k par la matrice de dimsension n x k
+    encode un mot de taille k par la matrice de dimension n x k en binaire
     """
     code = 0
     i = 0
-    while i < n:
-        j = 0
-        b = 0 # 0 ou 1
-        while j < k:
-            b = b ^ (((mot >> ( k - j + 1)) & 1) & ((matice_gen[j] >> (n - i + 1)) & 1)) 
-            j += 1
-        code += (b << (n - i + 1))
+    while i < k:
+        if (mot >> (k - i - 1)) & 1:
+            code = code ^ matrice_gen[i]
+        i += 1
     return code
 
+def encode_image(image, matrice_gen, k):
+    """
+    encode toute l'image grâce à la matrice génératrice, la taille en binaire des mots est k
+    """
+    image_encode = []
+    i = 0
+    while i < len(image):
+        mot = image[i]
+        code = encode_mot(mot, matrice_gen, k)
+        image_encode += [code]
+        i += 1
+    return image_encode
+
 matrice_gen_hamming = [70, 37, 19, 15]
-matrice_parite_hamming = [85, 51, 15]
+matrice_parite_hamming = [4, 2, 6, 1, 3, 7]
+
+def write_image_encode(dst, src, image_encode):
+    f=open(src, "r")
+    entete = []
+    for _ in range(3):
+        entete += [f.readline()]
+    f.close()
+
+    f = open(dst, "w")
+    for ligne in entete:
+        f.write(ligne)
+
+    i = 0
+    cpt = 0
+    while i < len(image_encode):
+        if cpt >= 30:
+            f.write("\n")
+            cpt = 0
+        f.write(str(image_encode[i])+" ")
+        i += 1
+        cpt += 1
+    f.close()
+
 
 
 if __name__ == "__main__":
-    matrice_pixel = read_pgm(sys.argv[1])
-    mat = decoupe_octet(matrice_pixel)
-    print(mat)
+    image = read_pgm(sys.argv[1])
+    image_coupe = decoupe_octet(image)
+    image_encode = encode_image(image_coupe, matrice_gen_hamming, 4)
+    write_image_encode("enc_"+sys.argv[1], sys.argv[1], image_encode)
