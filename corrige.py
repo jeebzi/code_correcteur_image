@@ -2,14 +2,18 @@ from encode import read_pgm, encode_mot
 import sys
 from gen_erreur import write_image
 
-matrice_controle = [1, 2, 3, 4, 5, 6, 7]
+matrice_controle_cool = [1, 2, 3, 4, 5, 6, 7]
+matrice_controle = [3, 5, 6, 7, 4, 2, 1]
+table_syndrome = [-1, 7, 6, 1, 5, 2, 3, 4]
 
-def corrige_erreur(image_bruite, n):
+def corrige_erreur(image_bruite, n, pas_cool=False):
     image_corrige = []
     i = 0
     while i < len(image_bruite):
         code_bruite = image_bruite[i]
         syndrome = encode_mot(code_bruite, matrice_controle, n)
+        if pas_cool:
+            syndrome = table_syndrome[syndrome]
         code_corrige = code_bruite ^ (1 << n - syndrome)
         image_corrige += [code_corrige]
         i += 1
@@ -17,6 +21,6 @@ def corrige_erreur(image_bruite, n):
 
 if __name__ == "__main__":
     image_bruite = read_pgm(sys.argv[1])
-    image_corrige = corrige_erreur(image_bruite, 7)
+    image_corrige = corrige_erreur(image_bruite, 7, True)
     write_image("corr_"+sys.argv[1], sys.argv[1], image_corrige)
 
