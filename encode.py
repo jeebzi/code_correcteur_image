@@ -54,7 +54,8 @@ def encode_image(image, matrice_gen, k):
         i += 1
     return image_encode
 
-matrice_gen_hamming = [70, 37, 19, 15]
+matrice_gen_hamming = [67, 37, 22, 15]
+# G=[75,42,25,7]
 matrice_parite_hamming = [4, 2, 6, 1, 3, 7]
 
 def write_image_encode(dst, src, image_encode):
@@ -83,6 +84,7 @@ def write_image_encode(dst, src, image_encode):
 
 if __name__ == "__main__":
     image = read_pgm(sys.argv[1])
+    print(len(image))
     image_coupe = decoupe_octet(image)
     image_encode = encode_image(image_coupe, matrice_gen_hamming, 4)
     write_image_encode("enc_"+sys.argv[1], sys.argv[1], image_encode)
